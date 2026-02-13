@@ -42,6 +42,9 @@ class EvidenceActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.makeText(this, "⚠️ Log de telemetria não encontrado para este vídeo.", Toast.LENGTH_LONG).show()
         }
 
+        // Atualiza contagem de registros na barra de telemetria
+        binding.tvEvidenceLogCount.text = "${tripLogs.size} registros"
+
         // Configura o Player
         if (videoPath.isNotEmpty()) {
             binding.videoViewEvidence.setVideoPath(videoPath)
@@ -204,6 +207,9 @@ class EvidenceActivity : AppCompatActivity(), OnMapReadyCallback {
 
                         val sdf = SimpleDateFormat("dd/MM/yy HH:mm:ss", Locale.getDefault())
                         binding.tvEvidenceDate.text = sdf.format(Date(logEntry.timestamp))
+
+                        // Coordenadas GPS no overlay
+                        binding.tvEvidenceCoords.text = String.format("%.4f, %.4f", logEntry.latitude, logEntry.longitude)
 
                         // Move o mapa para a posição exata
                         val pos = LatLng(logEntry.latitude, logEntry.longitude)
