@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Just Guide</string>
+
+    <string name="start_title">Just Guide</string>
+    <string name="start_description">O JustGuide guarda toda a sua Rota. Insira seu destino e dirija conosco…</string>
+    <string name="start_destination_hint">Destino....</string>
+    <string name="start_button_text">INICIAR GRAVAÇÃO</string>
+    <string name="start_trip_info">Baixe Sua Viagem\nData: __/____\nHorário: __:__</string>
+
+</resources>
