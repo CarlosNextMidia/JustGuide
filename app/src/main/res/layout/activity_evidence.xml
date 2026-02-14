@@ -1,320 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#030810">
-
-    <!-- ══════════════════════════════════════════
-         COCKPIT TOP BAR — Barra superior estilo painel
-         ══════════════════════════════════════════ -->
-    <LinearLayout
-        android:id="@+id/cockpitTopBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:background="#0A1018"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Bolinha REC -->
-        <View
-            android:id="@+id/recDot"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:background="#FF0000" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:text="SALA DE PERÍCIA"
-            android:textColor="#00FFCC"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:fontFamily="monospace"
-            android:letterSpacing="0.15" />
-
-        <!-- Escudo de segurança -->
-        <ImageView
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:src="@drawable/ic_shield_check"
-            android:contentDescription="Seguro"
-            app:tint="#00FFCC" />
-
-        <TextView
-            android:id="@+id/tvEvidenceLogCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:text="0 pts"
-            android:textColor="#3A5A7A"
-            android:textSize="10sp"
-            android:fontFamily="monospace" />
-
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#030810">
+    <LinearLayout android:id="@+id/cockpitTopBar" android:layout_width="0dp" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:background="#0A1018" android:paddingStart="16dp" android:paddingEnd="16dp" android:paddingTop="8dp" android:paddingBottom="8dp" app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
+        <View android:id="@+id/recDot" android:layout_width="8dp" android:layout_height="8dp" android:background="#FF0000"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:text="SALA DE PERÍCIA" android:textColor="#00FFCC" android:textSize="12sp" android:textStyle="bold" android:fontFamily="monospace" android:letterSpacing="0.15"/>
+        <ImageView android:layout_width="14dp" android:layout_height="14dp" android:src="@drawable/ic_shield_check" android:contentDescription="Seguro" app:tint="#00FFCC"/>
+        <TextView android:id="@+id/tvEvidenceLogCount" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="0 pts" android:textColor="#3A5A7A" android:textSize="10sp" android:fontFamily="monospace"/>
     </LinearLayout>
-
-    <!-- Linha separadora neon -->
-    <View
-        android:id="@+id/neonLine1"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="#1A3A4A"
-        app:layout_constraintTop_toBottomOf="@id/cockpitTopBar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- ══════════════════════════════════════════
-         BLOCO VÍDEO — "Para-brisa" com moldura cockpit
-         ══════════════════════════════════════════ -->
-    <FrameLayout
-        android:id="@+id/videoFrame"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="6dp"
-        android:background="@android:color/black"
-        app:layout_constraintDimensionRatio="16:9"
-        app:layout_constraintTop_toBottomOf="@id/neonLine1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Player de Vídeo -->
-        <VideoView
-            android:id="@+id/videoViewEvidence"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center" />
-
-        <!-- HUD Overlay inferior — Dados periciais sobre o vídeo -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="vertical"
-            android:background="#CC000000"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="8dp">
-
-            <!-- Linha 1: Velocidade + Data -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:id="@+id/tvEvidenceSpeed"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="0"
-                    android:textColor="#00FFCC"
-                    android:textSize="32sp"
-                    android:textStyle="bold"
-                    android:fontFamily="monospace"
-                    android:shadowColor="#0088AA"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="12"
-                    tools:text="47" />
-
-                <TextView
-                    android:id="@+id/tvSpeedUnit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:text="KM/H"
-                    android:textColor="#4A8A8A"
-                    android:textSize="10sp"
-                    android:fontFamily="monospace" />
-
-                <!-- Coluna direita: Data + Coords -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="end">
-
-                    <TextView
-                        android:id="@+id/tvEvidenceDate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="--/--/-- --:--:--"
-                        android:textColor="#CCCCCC"
-                        android:textSize="11sp"
-                        android:fontFamily="monospace"
-                        tools:text="13/02/26 18:42:15" />
-
-                    <TextView
-                        android:id="@+id/tvEvidenceCoords"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="GPS ---.---- ---.----"
-                        android:textColor="#3A6A6A"
-                        android:textSize="9sp"
-                        android:fontFamily="monospace"
-                        tools:text="-23.5432 -46.6342" />
-
+    <View android:id="@+id/neonLine1" android:layout_width="0dp" android:layout_height="1dp" android:background="#1A3A4A" app:layout_constraintTop_toBottomOf="@id/cockpitTopBar" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+    <FrameLayout android:id="@+id/videoFrame" android:layout_width="0dp" android:layout_height="0dp" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" android:layout_marginTop="6dp" android:background="@android:color/black" app:layout_constraintDimensionRatio="16:9" app:layout_constraintTop_toBottomOf="@id/neonLine1" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
+        <VideoView android:id="@+id/videoViewEvidence" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_gravity="center"/>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_gravity="bottom" android:orientation="vertical" android:background="#CC000000" android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingTop="6dp" android:paddingBottom="8dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <TextView android:id="@+id/tvEvidenceSpeed" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="0" android:textColor="#00FFCC" android:textSize="32sp" android:textStyle="bold" android:fontFamily="monospace" android:shadowColor="#0088AA" android:shadowDx="0" android:shadowDy="0" android:shadowRadius="12"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginEnd="12dp" android:text="KM/H" android:textColor="#4A8A8A" android:textSize="10sp" android:fontFamily="monospace"/>
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="end">
+                    <TextView android:id="@+id/tvEvidenceDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="--/--/-- --:--:--" android:textColor="#CCCCCC" android:textSize="11sp" android:fontFamily="monospace"/>
+                    <TextView android:id="@+id/tvEvidenceCoords" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GPS ---.---- ---.----" android:textColor="#3A6A6A" android:textSize="9sp" android:fontFamily="monospace"/>
                 </LinearLayout>
-
             </LinearLayout>
-
-            <!-- Linha 2: Endereço -->
-            <TextView
-                android:id="@+id/tvEvidenceAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="LOCALIZANDO..."
-                android:textColor="#6A9A9A"
-                android:textSize="11sp"
-                android:fontFamily="monospace"
-                android:maxLines="1"
-                android:ellipsize="end"
-                tools:text="Av. Prestes Maia, 241 - Centro, São Paulo" />
-
+            <TextView android:id="@+id/tvEvidenceAddress" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="LOCALIZANDO..." android:textColor="#6A9A9A" android:textSize="11sp" android:fontFamily="monospace" android:maxLines="1" android:ellipsize="end"/>
         </LinearLayout>
-
     </FrameLayout>
-
-    <!-- ══════════════════════════════════════════
-         CONTROLES DE VÍDEO — Barra estilo cockpit
-         ══════════════════════════════════════════ -->
-    <LinearLayout
-        android:id="@+id/videoControls"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="4dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:background="#0A1220"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        app:layout_constraintTop_toBottomOf="@id/videoFrame"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <!-- Botão Play/Pause -->
-        <ImageButton
-            android:id="@+id/btnPlayPause"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:src="@android:drawable/ic_media_pause"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Play/Pause"
-            android:scaleType="centerInside"
-            android:padding="6dp"
-            app:tint="#00FFCC" />
-
-        <!-- Botão Retroceder 10s -->
-        <ImageButton
-            android:id="@+id/btnRewind"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:src="@android:drawable/ic_media_rew"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Retroceder 10s"
-            android:scaleType="centerInside"
-            android:padding="6dp"
-            app:tint="#5A8A9A" />
-
-        <!-- Botão Avançar 10s -->
-        <ImageButton
-            android:id="@+id/btnForward"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="4dp"
-            android:src="@android:drawable/ic_media_ff"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Avançar 10s"
-            android:scaleType="centerInside"
-            android:padding="6dp"
-            app:tint="#5A8A9A" />
-
-        <!-- Barra de progresso do vídeo -->
-        <SeekBar
-            android:id="@+id/seekBarVideo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:progressTint="#00FFCC"
-            android:thumbTint="#00FFCC"
-            android:progressBackgroundTint="#1A3A4A"
-            android:max="100" />
-
-        <!-- Tempo atual / total -->
-        <TextView
-            android:id="@+id/tvVideoTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="00:00"
-            android:textColor="#5A8A9A"
-            android:textSize="10sp"
-            android:fontFamily="monospace" />
-
+    <LinearLayout android:id="@+id/videoControls" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" android:layout_marginTop="4dp" android:orientation="horizontal" android:gravity="center_vertical" android:background="#0A1220" android:paddingStart="12dp" android:paddingEnd="12dp" android:paddingTop="6dp" android:paddingBottom="6dp" app:layout_constraintTop_toBottomOf="@id/videoFrame" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
+        <ImageButton android:id="@+id/btnPlayPause" android:layout_width="36dp" android:layout_height="36dp" android:src="@android:drawable/ic_media_pause" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="Play/Pause" android:scaleType="centerInside" android:padding="6dp" app:tint="#00FFCC"/>
+        <ImageButton android:id="@+id/btnRewind" android:layout_width="32dp" android:layout_height="32dp" android:layout_marginStart="8dp" android:src="@android:drawable/ic_media_rew" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="Retroceder" android:scaleType="centerInside" android:padding="6dp" app:tint="#5A8A9A"/>
+        <ImageButton android:id="@+id/btnForward" android:layout_width="32dp" android:layout_height="32dp" android:layout_marginStart="4dp" android:src="@android:drawable/ic_media_ff" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="Avançar" android:scaleType="centerInside" android:padding="6dp" app:tint="#5A8A9A"/>
+        <SeekBar android:id="@+id/seekBarVideo" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" android:progressTint="#00FFCC" android:thumbTint="#00FFCC" android:progressBackgroundTint="#1A3A4A" android:max="100"/>
+        <TextView android:id="@+id/tvVideoTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="00:00" android:textColor="#5A8A9A" android:textSize="10sp" android:fontFamily="monospace"/>
     </LinearLayout>
-
-    <!-- Linha separadora -->
-    <View
-        android:id="@+id/neonLine2"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="4dp"
-        android:background="#1A3A4A"
-        app:layout_constraintTop_toBottomOf="@id/videoControls"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- ══════════════════════════════════════════
-         BLOCO MAPA — Com borda cockpit
-         ══════════════════════════════════════════ -->
-    <FrameLayout
-        android:id="@+id/mapFrame"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="8dp"
-        android:background="#0A1018"
-        app:layout_constraintTop_toBottomOf="@id/neonLine2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <fragment
-            android:id="@+id/mapEvidence"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <!-- Moldura do mapa — borda interna sutil -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent" />
-
+    <LinearLayout android:id="@+id/actionBar" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" android:layout_marginTop="4dp" android:orientation="horizontal" android:gravity="center" android:background="#0A1220" android:paddingTop="6dp" android:paddingBottom="6dp" app:layout_constraintTop_toBottomOf="@id/videoControls" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
+        <LinearLayout android:id="@+id/btnVerifyIntegrity" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="6dp" android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_shield_check" app:tint="#00FFCC"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="VERIFICAR" android:textColor="#5A8A9A" android:textSize="8sp" android:fontFamily="monospace" android:textStyle="bold"/>
+        </LinearLayout>
+        <View android:layout_width="1dp" android:layout_height="28dp" android:background="#1A3A4A"/>
+        <LinearLayout android:id="@+id/btnCutEvidence" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="6dp" android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@android:drawable/ic_menu_cut" app:tint="#FF9800"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="CORTAR" android:textColor="#5A8A9A" android:textSize="8sp" android:fontFamily="monospace" android:textStyle="bold"/>
+        </LinearLayout>
+        <View android:layout_width="1dp" android:layout_height="28dp" android:background="#1A3A4A"/>
+        <LinearLayout android:id="@+id/btnGeneratePdf" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="6dp" android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true">
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@android:drawable/ic_menu_save" app:tint="#00B0FF"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="LAUDO PDF" android:textColor="#5A8A9A" android:textSize="8sp" android:fontFamily="monospace" android:textStyle="bold"/>
+        </LinearLayout>
+    </LinearLayout>
+    <View android:id="@+id/neonLine2" android:layout_width="0dp" android:layout_height="1dp" android:layout_marginTop="4dp" android:background="#1A3A4A" app:layout_constraintTop_toBottomOf="@id/actionBar" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
+    <FrameLayout android:id="@+id/mapFrame" android:layout_width="0dp" android:layout_height="0dp" android:layout_marginStart="8dp" android:layout_marginEnd="8dp" android:layout_marginTop="6dp" android:layout_marginBottom="8dp" android:background="#0A1018" app:layout_constraintTop_toBottomOf="@id/neonLine2" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
+        <fragment android:id="@+id/mapEvidence" android:name="com.google.android.gms.maps.SupportMapFragment" android:layout_width="match_parent" android:layout_height="match_parent"/>
     </FrameLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

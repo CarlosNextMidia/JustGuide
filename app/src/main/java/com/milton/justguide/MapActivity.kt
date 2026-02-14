@@ -774,47 +774,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             logFile.writeText(logData)
             LocationData.tripLog.clear()
             runOnUiThread { Toast.makeText(this, "📊 Prova Blindada com Sucesso!", Toast.LENGTH_SHORT).show() }
-
-            // ═══ CARIMBO: Processa todos os vídeos da sessão ═══
-            carimbarVideosDaSessao(recordingSessionId)
-
         } catch (e: Exception) { e.printStackTrace() }
-    }
-
-    /**
-     * Encontra todos os MP4 da sessão e aplica carimbo de telemetria em cada um.
-     * Roda em background — o usuário pode continuar usando o app.
-     */
-    private fun carimbarVideosDaSessao(sessionId: Long) {
-        val moviesDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "JustGuide")
-        if (!moviesDir.exists()) return
-
-        val sessionVideos = moviesDir.listFiles { f ->
-            f.extension == "mp4" && f.name.contains("JustGuide_$sessionId")
-        } ?: return
-
-        if (sessionVideos.isEmpty()) return
-
-        runOnUiThread {
-            Toast.makeText(this, "⚙️ Carimbando ${sessionVideos.size} vídeo(s)...", Toast.LENGTH_SHORT).show()
-        }
-
-        val stamper = VideoStamper(this)
-        Thread {
-            var successCount = 0
-            for (video in sessionVideos) {
-                val result = stamper.stamp(video.absolutePath)
-                if (result.success) successCount++
-                android.util.Log.d("JustGuide", "Carimbo ${video.name}: ${if (result.success) "✅" else "❌ ${result.error}"}")
-            }
-            runOnUiThread {
-                if (successCount > 0) {
-                    Toast.makeText(this, "✅ $successCount vídeo(s) carimbado(s)!", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(this, "⚠️ Carimbo não aplicado (sem telemetria)", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }.start()
     }
 
     private fun startLocationService() { if (checkLocationPermission()) ContextCompat.startForegroundService(this, Intent(this, LocationService::class.java)) }

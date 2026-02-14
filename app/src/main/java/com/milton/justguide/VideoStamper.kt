@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import java.io.File
+import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -169,8 +170,6 @@ class VideoStamper(private val context: Context) {
 
         // Reconfigura decoder para output em buffer (não surface)
         val decoder2 = MediaCodec.createDecoderByType(mime)
-        val decoderFormat2 = MediaFormat(videoFormat)
-        // Force color format YUV
         decoder2.configure(videoFormat, null, null, 0)
         decoder2.start()
 
