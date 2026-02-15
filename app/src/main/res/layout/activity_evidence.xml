@@ -35,7 +35,7 @@
         </LinearLayout>
         <View android:layout_width="1dp" android:layout_height="28dp" android:background="#1A3A4A"/>
         <LinearLayout android:id="@+id/btnCutEvidence" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:padding="6dp" android:background="?attr/selectableItemBackground" android:clickable="true" android:focusable="true">
-            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@android:drawable/ic_menu_cut" app:tint="#FF9800"/>
+            <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@android:drawable/ic_menu_edit" app:tint="#FF9800"/>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="CORTAR" android:textColor="#5A8A9A" android:textSize="8sp" android:fontFamily="monospace" android:textStyle="bold"/>
         </LinearLayout>
         <View android:layout_width="1dp" android:layout_height="28dp" android:background="#1A3A4A"/>

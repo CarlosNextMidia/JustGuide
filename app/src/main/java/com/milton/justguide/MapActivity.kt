@@ -90,7 +90,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         startLocationService()
         setupObservers()
 
-        binding.fabRecoverTrip.setOnClickListener { showTripHistoryDialog() }
+        binding.fabRecoverTrip.setOnClickListener { showTripSelector() }
         binding.fabRecoverTrip.setOnLongClickListener { abrirBuscaInteligente(); true }
         binding.fabStopRecording.setOnClickListener { toggleRecording() }
         binding.fabCloseApp.setOnClickListener { exitApplication() }
@@ -735,14 +735,56 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         else googleMap.setMapStyle(null)
     }
 
-    private fun showTripHistoryDialog() {
+    private fun showTripSelector() {
         val moviesDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "JustGuide")
-        val files = moviesDir.listFiles { f -> f.extension == "mp4" }?.sortedByDescending { it.lastModified() }
-        if (files.isNullOrEmpty()) return
-        AlertDialog.Builder(this).setTitle("Cortar Prova").setItems(files.map { SimpleDateFormat("dd/MM HH:mm").format(Date(it.lastModified())) }.toTypedArray()) { _, i ->
-            val input = EditText(this); input.inputType = android.text.InputType.TYPE_CLASS_NUMBER
-            AlertDialog.Builder(this).setTitle("Minuto").setView(input).setPositiveButton("GERAR") { _, _ -> trimIncidentVideo(files[i].absolutePath, (input.text.toString().toIntOrNull() ?: 0) * 60) }.show()
-        }.show()
+        val files = moviesDir.listFiles { f -> f.extension == "mp4" && f.name.startsWith("JustGuide_") }?.sortedByDescending { it.lastModified() }
+        if (files.isNullOrEmpty()) {
+            Toast.makeText(this, "Nenhuma viagem encontrada.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Limita a 20 viagens mais recentes na lista
+        val recentFiles = files.take(20)
+        val sdfDate = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+        val sdfTime = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+        val names = recentFiles.map { file ->
+            val date = sdfDate.format(Date(file.lastModified()))
+            val time = sdfTime.format(Date(file.lastModified()))
+            val sizeMb = String.format("%.1f", file.length() / (1024.0 * 1024.0))
+            "$date  $time  (${sizeMb}MB)"
+        }.toTypedArray()
+
+        AlertDialog.Builder(this)
+            .setTitle("Viagens Recentes")
+            .setItems(names) { _, i ->
+                val selectedFile = recentFiles[i]
+                val options = arrayOf("🔍 Abrir na Sala de Perícia", "✂️ Cortar Prova (40s)")
+                AlertDialog.Builder(this)
+                    .setTitle(names[i])
+                    .setItems(options) { _, opt ->
+                        when (opt) {
+                            0 -> {
+                                startActivity(Intent(this, EvidenceActivity::class.java).apply {
+                                    putExtra("VIDEO_PATH", selectedFile.absolutePath)
+                                })
+                            }
+                            1 -> {
+                                val input = EditText(this)
+                                input.inputType = android.text.InputType.TYPE_CLASS_NUMBER
+                                input.hint = "Minuto do incidente"
+                                AlertDialog.Builder(this)
+                                    .setTitle("Minuto")
+                                    .setView(input)
+                                    .setPositiveButton("GERAR") { _, _ ->
+                                        trimIncidentVideo(selectedFile.absolutePath, (input.text.toString().toIntOrNull() ?: 0) * 60)
+                                    }.show()
+                            }
+                        }
+                    }.show()
+            }
+            .setNegativeButton("Fechar", null)
+            .show()
     }
 
     private fun setupObservers() {
