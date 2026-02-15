@@ -70,6 +70,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private var recordingPartNumber = 1        // Parte atual (1, 2, 3...)
     private var isSwitchingCamera = false       // Flag para evitar salvar log parcial na troca
 
+    // ═══ Filtro de velocidade (média móvel) ═══
+    private val speedBuffer = mutableListOf<Int>()   // Últimas N leituras de velocidade
+    private val SPEED_BUFFER_SIZE = 4                 // Tamanho da média móvel
+    private val SPEED_THRESHOLD_STOPPED = 5           // Abaixo disso = parado (km/h)
+    private var lastValidSpeed = 0                    // Última velocidade válida
+    private var lastGpsUpdateMs = 0L                  // Timestamp do último update GPS
+
     private val startAutocomplete = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val place = Autocomplete.getPlaceFromIntent(result.data!!)
@@ -346,11 +353,55 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun updateMap(loc: Location) {
         if (!isMapReady) return
         val lp = LatLng(loc.latitude, loc.longitude)
-        pathPoints.add(lp)
+        val agora = System.currentTimeMillis()
+
+        // ═══ FILTRO DE VELOCIDADE (média móvel + threshold de parado) ═══
+        val rawSpeedKmh = if (loc.hasSpeed()) (loc.speed * 3.6).toInt() else 0
+
+        // Adiciona ao buffer circular
+        speedBuffer.add(rawSpeedKmh)
+        if (speedBuffer.size > SPEED_BUFFER_SIZE) speedBuffer.removeAt(0)
+
+        // Calcula média móvel
+        val avgSpeed = speedBuffer.average().toInt()
+
+        // Se abaixo do threshold → parado (elimina drift do GPS)
+        val speedKmh = if (avgSpeed < SPEED_THRESHOLD_STOPPED) 0 else avgSpeed
+        lastValidSpeed = speedKmh
+        lastGpsUpdateMs = agora
+
+        // ═══ FILTRO DE POSIÇÃO (ignora pulos grandes quando parado) ═══
+        val addPoint = if (pathPoints.isNotEmpty() && speedKmh == 0) {
+            // Parado: só adiciona se moveu mais de 10m (evita ziguezague parado)
+            val lastPoint = pathPoints.last()
+            val results = FloatArray(1)
+            android.location.Location.distanceBetween(lastPoint.latitude, lastPoint.longitude, lp.latitude, lp.longitude, results)
+            results[0] > 10f
+        } else {
+            true
+        }
+
+        if (addPoint) {
+            // ═══ SUAVIZAÇÃO: Simplifica pontos muito próximos ═══
+            if (pathPoints.size >= 2) {
+                val prev = pathPoints[pathPoints.size - 1]
+                val prevPrev = pathPoints[pathPoints.size - 2]
+                val results = FloatArray(1)
+                android.location.Location.distanceBetween(prev.latitude, prev.longitude, lp.latitude, lp.longitude, results)
+                // Se o ponto anterior está a menos de 5m e na mesma direção, substitui
+                if (results[0] < 5f) {
+                    pathPoints[pathPoints.size - 1] = lp // Substitui em vez de adicionar
+                } else {
+                    pathPoints.add(lp)
+                }
+            } else {
+                pathPoints.add(lp)
+            }
+        }
+
         verificarDesvioDeRota(lp)
 
-        val speedKmh = (loc.speed * 3.6).toInt()
-
+        // ═══ LOG DE TELEMETRIA (usa velocidade filtrada) ═══
         if (recording != null) {
             val addrText = if (binding.tvAddress.text.isNotEmpty()) binding.tvAddress.text.toString() else "Calculando..."
             val logEntry = LocationLog(
@@ -363,20 +414,43 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             LocationData.tripLog.add(logEntry)
         }
 
+        // ═══ INDICADOR DE GPS ═══
+        val gpsAccuracy = if (loc.hasAccuracy()) loc.accuracy else 999f
+
         runOnUiThread {
             binding.tvSpeed.text = speedKmh.toString()
             if (speedKmh > limiteVelocidade) {
                 binding.tvSpeed.setTextColor(Color.RED)
                 if (System.currentTimeMillis() % 2000 < 500) toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 300)
-            } else binding.tvSpeed.setTextColor(Color.WHITE)
+            } else {
+                binding.tvSpeed.setTextColor(Color.WHITE)
+            }
+
+            // Indicador visual de qualidade do GPS na barra de tempo
+            val gpsIndicator = when {
+                gpsAccuracy < 10 -> "●"    // Excelente
+                gpsAccuracy < 30 -> "◐"    // Bom
+                gpsAccuracy < 100 -> "○"   // Fraco
+                else -> "✕"                // Sem sinal
+            }
+            val time = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
+            binding.tvDatetime.text = "$time  GPS$gpsIndicator"
         }
 
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(lp, 17f))
+
+        // ═══ POLYLINE SUAVIZADA (mais grossa + geodésica) ═══
         if (pathPoints.size >= 2) {
             polyline?.remove()
-            polyline = googleMap.addPolyline(PolylineOptions().addAll(pathPoints).width(25f).color(0xFF00FF00.toInt()).geodesic(true))
+            polyline = googleMap.addPolyline(
+                PolylineOptions()
+                    .addAll(pathPoints)
+                    .width(35f)           // Mais grossa (era 25f)
+                    .color(0xFF00FF00.toInt())
+                    .geodesic(true)
+            )
         }
-        binding.tvDatetime.text = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
+
         cameraExecutor.execute { getStreetAddress(loc) }
     }
 
@@ -742,12 +816,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.makeText(this, "Nenhuma viagem encontrada.", Toast.LENGTH_SHORT).show()
             return
         }
-
-        // Limita a 20 viagens mais recentes na lista
         val recentFiles = files.take(20)
         val sdfDate = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
         val sdfTime = SimpleDateFormat("HH:mm", Locale.getDefault())
-
         val names = recentFiles.map { file ->
             val date = sdfDate.format(Date(file.lastModified()))
             val time = sdfTime.format(Date(file.lastModified()))
@@ -759,16 +830,14 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             .setTitle("Viagens Recentes")
             .setItems(names) { _, i ->
                 val selectedFile = recentFiles[i]
-                val options = arrayOf("🔍 Abrir na Sala de Perícia", "✂️ Cortar Prova (40s)")
+                val options = arrayOf("Abrir na Sala de Perícia", "Cortar Prova (40s)")
                 AlertDialog.Builder(this)
                     .setTitle(names[i])
                     .setItems(options) { _, opt ->
                         when (opt) {
-                            0 -> {
-                                startActivity(Intent(this, EvidenceActivity::class.java).apply {
-                                    putExtra("VIDEO_PATH", selectedFile.absolutePath)
-                                })
-                            }
+                            0 -> startActivity(Intent(this, EvidenceActivity::class.java).apply {
+                                putExtra("VIDEO_PATH", selectedFile.absolutePath)
+                            })
                             1 -> {
                                 val input = EditText(this)
                                 input.inputType = android.text.InputType.TYPE_CLASS_NUMBER
