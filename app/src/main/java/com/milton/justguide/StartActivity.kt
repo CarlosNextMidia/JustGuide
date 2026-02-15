@@ -102,7 +102,7 @@ class StartActivity : AppCompatActivity() {
             .setNegativeButton("Fechar", null)
 
         if (videoFiles.size > 10) {
-            builder.setNeutralButton("Limpar antigas") { _, _ -> mostrarDialogoLimpeza(videoFiles) }
+            builder.setNeutralButton("Limpar antigas") { _, _ -> mostrarDialogoLimpeza(videoFiles.toList()) }
         }
 
         builder.show()
@@ -173,7 +173,7 @@ class StartActivity : AppCompatActivity() {
         MediaScannerConnection.scanFile(this, arrayOf(videoFile.absolutePath), null, null)
     }
 
-    private fun mostrarDialogoLimpeza(allFiles: Array<File>) {
+    private fun mostrarDialogoLimpeza(allFiles: List<File>) {
         val totalSizeMb = allFiles.sumOf { it.length() } / (1024.0 * 1024.0)
         val options = arrayOf(
             "Manter últimas 10 viagens",
@@ -182,9 +182,8 @@ class StartActivity : AppCompatActivity() {
             "Excluir TODAS"
         )
 
-        AlertDialog.Builder(this)
-            .setTitle("Limpar Viagens")
-            .setMessage("${allFiles.size} viagens (${String.format("%.0f", totalSizeMb)} MB)")
+AlertDialog.Builder(this)
+            .setTitle("Limpar — ${allFiles.size} viagens (${String.format("%.0f", totalSizeMb)} MB)")
             .setItems(options) { _, which ->
                 val sorted = allFiles.sortedByDescending { it.lastModified() }
                 val filesToDelete = when (which) {
