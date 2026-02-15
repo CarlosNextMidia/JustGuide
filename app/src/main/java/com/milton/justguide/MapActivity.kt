@@ -874,7 +874,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         if (LocationData.tripLog.isEmpty()) return
         val moviesDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "JustGuide")
         val videoFile = File(moviesDir, fileName)
-        val assinaturaVideo = if (videoFile.exists()) gerarAssinaturaArquivo(videoFile) else "sessao_multiplos_videos"
+        val assinaturaVideo = if (videoFile.exists()) {
+            gerarAssinaturaArquivo(videoFile)
+        } else {
+            val sessionFiles = moviesDir.listFiles { f ->
+                f.extension == "mp4" && f.name.contains("JustGuide_$recordingSessionId")
+            }
+            if (!sessionFiles.isNullOrEmpty()) {
+                gerarAssinaturaArquivo(sessionFiles.first())
+            } else "sem_video"
+        }
         val logFinal = mapOf("assinatura_seguranca" to assinaturaVideo, "dados_telemetria" to LocationData.tripLog.toList())
         val logData = Gson().toJson(logFinal)
         val logFileName = fileName.replace(".mp4", ".json")

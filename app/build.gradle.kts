@@ -22,14 +22,26 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+signingConfigs {
+    create("release") {
+        val props = org.jetbrains.kotlin.konan.properties.Properties()
+        val localProps = rootProject.file("local.properties")
+        if (localProps.exists()) props.load(localProps.inputStream())
+        storeFile = file(props.getProperty("RELEASE_STORE_FILE", ""))
+        storePassword = props.getProperty("RELEASE_STORE_PASSWORD", "")
+        keyAlias = props.getProperty("RELEASE_KEY_ALIAS", "")
+        keyPassword = props.getProperty("RELEASE_KEY_PASSWORD", "")
+    }
+}
     buildTypes {
         release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+    isMinifyEnabled = true
+    isShrinkResources = true
+signingConfig = signingConfigs.getByName("release")
+    proguardFiles(
+        getDefaultProguardFile("proguard-android-optimize.txt"),
+        "proguard-rules.pro"
+    )
         }
     }
     compileOptions {

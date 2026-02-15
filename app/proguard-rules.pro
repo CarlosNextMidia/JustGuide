@@ -1,21 +1,28 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# ═══ JustGuide ProGuard Rules ═══
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Manter line numbers para crash reports
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# ═══ GSON (serialização JSON) ═══
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.google.gson.** { *; }
+-keep class com.milton.justguide.LocationLog { *; }
+-keepclassmembers class com.milton.justguide.LocationLog { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# ═══ Google Maps ═══
+-keep class com.google.android.gms.maps.** { *; }
+-keep class com.google.android.gms.location.** { *; }
+
+# ═══ Google Places ═══
+-keep class com.google.android.libraries.places.** { *; }
+
+# ═══ CameraX ═══
+-keep class androidx.camera.** { *; }
+
+# ═══ ViewBinding ═══
+-keep class com.milton.justguide.databinding.** { *; }
+
+# ═══ Manter TODAS as classes do app ═══
+-keep class com.milton.justguide.** { *; }
